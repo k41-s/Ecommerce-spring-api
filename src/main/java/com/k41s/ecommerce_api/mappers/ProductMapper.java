@@ -6,22 +6,24 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { ProductImageMapper.class })
 public interface ProductMapper {
 
     @Mapping(target = "categoryId", source = "category.id")
     @Mapping(target = "categoryName", source = "category.name")
     @Mapping(target = "countryIds", expression = "java(entity.getCountries().stream().map(c -> c.getId()).toList())")
     @Mapping(target = "countryNames", expression = "java(entity.getCountries().stream().map(c -> c.getName()).toList())")
+    @Mapping(target = "images", source = "images")
     ProductDTO toDto(Product entity);
 
+    // service handles images (next 2 methods)
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "countries", ignore = true)
+    @Mapping(target = "images", ignore = true)
     Product toEntity(ProductDTO dto);
 
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "countries", ignore = true)
+    @Mapping(target = "images", ignore = true)
     void updateEntityFromDto(ProductDTO dto, @MappingTarget Product entity);
-
-
 }

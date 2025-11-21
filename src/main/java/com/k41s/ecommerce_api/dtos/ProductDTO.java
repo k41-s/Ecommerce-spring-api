@@ -13,7 +13,7 @@ public class ProductDTO {
     public String description;
     public int categoryId;
     public String categoryName;
-    public String imagePath;
+    public List<ProductImageDTO> images;
     public List<Integer> countryIds;
     public List<String> countryNames;
 }

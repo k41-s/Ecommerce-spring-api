@@ -1,8 +1,6 @@
 package com.k41s.ecommerce_api.controllers;
 
 import com.k41s.ecommerce_api.dtos.ProductDTO;
-import com.k41s.ecommerce_api.entities.Product;
-import com.k41s.ecommerce_api.mappers.ProductMapper;
 import com.k41s.ecommerce_api.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,7 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<?> getAll() {
-    return ResponseEntity.ok(service.getAll());
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id}")
@@ -41,10 +39,8 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
         boolean deleted = service.delete(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build(); // 204
-        } else {
-            return ResponseEntity.notFound().build();  // 404
-        }
+        return deleted
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

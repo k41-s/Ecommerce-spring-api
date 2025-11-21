@@ -17,9 +17,13 @@ public class Product {
     private int id;
     private String name;
     private String description;
-    private String imagePath;
 
-    // Many-to-One with Category
+    @Transient
+    private String imagePath; // not needed in this api
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> images;
+
     @ManyToOne
     @JoinColumn(name = "CategoryId", nullable = false)
     private Category category;
