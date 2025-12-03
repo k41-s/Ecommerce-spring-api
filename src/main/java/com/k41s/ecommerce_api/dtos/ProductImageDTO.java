@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProductImageDTO {
-    private int id;
-    private byte[] data;
+    private Integer id;
+    private String url;
     private String mimeType;
 }

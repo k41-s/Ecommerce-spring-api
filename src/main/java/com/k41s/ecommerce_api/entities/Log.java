@@ -10,10 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "Log")
-public class Log {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class Log extends BaseEntity {
     private LocalDateTime timestamp;
 
     @Enumerated(EnumType.STRING)

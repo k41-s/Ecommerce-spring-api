@@ -6,10 +6,12 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+// NEXT UP: implement orders passing around ids of products' images to be displayed
+
 @Getter
 @Setter
 public class OrderDTO {
-    public int id;
+    public Integer id;
     public int productId;
     public String productName;
     public int userId;

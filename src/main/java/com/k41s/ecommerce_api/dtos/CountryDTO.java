@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CountryDTO {
-    public int id;
+    public Integer id;
     public String name;
 }

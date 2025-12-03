@@ -11,10 +11,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "Country")
-public class Country {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class Country extends BaseEntity {
 
     @Column(nullable = false)
     private String name;

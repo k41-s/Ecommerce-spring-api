@@ -33,6 +33,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(err, ex.getStatus());
     }
 
+    @ExceptionHandler(ImageProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleImageProcessingException(ImageProcessingException ex, HttpServletRequest request) {
+        // Log the specific exception details
+        log.error("Image Processing Error: {}", ex.getMessage(), ex);
+
+        ErrorResponse err = new ErrorResponse();
+        err.setErrorCode("IMAGE_PROCESSING_FAILED");
+        err.setMessage(ex.getMessage());
+        err.setStatus(HttpStatus.BAD_REQUEST.value()); // or HttpStatus.INTERNAL_SERVER_ERROR
+        err.setTimestamp(Instant.now());
+        err.setPath(request.getRequestURI());
+
+        return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
         logService.log(LogLevel.ERROR, ex.getMessage());

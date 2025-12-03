@@ -11,10 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "CustomerOrder")
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class Order extends BaseEntity {
 
     private LocalDateTime orderedAt;
 

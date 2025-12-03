@@ -1,15 +1,11 @@
 package com.k41s.ecommerce_api.controllers;
 
 import com.k41s.ecommerce_api.dtos.CountryDTO;
-import com.k41s.ecommerce_api.entities.Country;
-import com.k41s.ecommerce_api.mappers.CountryMapper;
 import com.k41s.ecommerce_api.services.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/countries")

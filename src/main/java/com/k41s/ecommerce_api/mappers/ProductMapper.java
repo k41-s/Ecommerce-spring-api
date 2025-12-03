@@ -11,9 +11,12 @@ public interface ProductMapper {
 
     @Mapping(target = "categoryId", source = "category.id")
     @Mapping(target = "categoryName", source = "category.name")
-    @Mapping(target = "countryIds", expression = "java(entity.getCountries().stream().map(c -> c.getId()).toList())")
-    @Mapping(target = "countryNames", expression = "java(entity.getCountries().stream().map(c -> c.getName()).toList())")
-    @Mapping(target = "images", source = "images")
+    @Mapping(target = "countryIds",
+            expression = "java(entity.getCountries().stream().map(c -> c.getId()).toList())")
+    @Mapping(target = "countryNames",
+            expression = "java(entity.getCountries().stream().map(c -> c.getName()).toList())")
+    @Mapping(target = "imageIds",
+            expression = "java(entity.getImages().stream().map(i -> i.getId()).toList())")
     ProductDTO toDto(Product entity);
 
     // service handles images (next 2 methods)
@@ -21,6 +24,7 @@ public interface ProductMapper {
     @Mapping(target = "countries", ignore = true)
     @Mapping(target = "images", ignore = true)
     Product toEntity(ProductDTO dto);
+
 
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "countries", ignore = true)

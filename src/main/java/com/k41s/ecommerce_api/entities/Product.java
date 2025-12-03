@@ -1,5 +1,4 @@
 package com.k41s.ecommerce_api.entities;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,15 +10,10 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "Product")
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class Product extends BaseEntity {
     private String name;
     private String description;
-
-    @Transient
-    private String imagePath; // not needed in this api
+    private boolean isDeleted;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> images;

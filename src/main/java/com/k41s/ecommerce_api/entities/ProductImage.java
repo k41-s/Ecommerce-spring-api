@@ -7,12 +7,8 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "ProductImages")
-public class ProductImage {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+@Table(name = "ProductImage")
+public class ProductImage extends BaseEntity {
 
     @Lob
     private byte[] data;

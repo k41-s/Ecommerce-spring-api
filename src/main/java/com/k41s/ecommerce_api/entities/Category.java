@@ -10,10 +10,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "Category")
-public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class Category extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
