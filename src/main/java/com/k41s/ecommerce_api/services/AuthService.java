@@ -63,7 +63,7 @@ public class AuthService {
         String token = tokenProvider.generateToken(authentication);
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        User user = userDetails.getUser();
+        User user = userDetails.user();
         AuthenticatedUserDTO authUserDto = mapper.toAuthenticatedUserDto(user);
         authUserDto.setToken(token);
 

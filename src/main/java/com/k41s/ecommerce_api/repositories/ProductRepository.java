@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product,Integer> {
     @Query("SELECT p FROM Product p WHERE p.isDeleted = false AND " +
             "(:search IS NULL OR p.name LIKE %:search%) AND " +
-            "(:categoryId = 0 OR p.category.id = :categoryId)")
+            "(:categoryId = 0 OR :categoryId IS NULL OR p.category.id = :categoryId)")
     Page<Product> search(
             @Param("search") String search,
             @Param("categoryId") Integer categoryId,

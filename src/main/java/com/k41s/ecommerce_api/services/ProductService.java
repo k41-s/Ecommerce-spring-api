@@ -4,6 +4,7 @@ import com.k41s.ecommerce_api.dtos.ProductDTO;
 import com.k41s.ecommerce_api.entities.Category;
 import com.k41s.ecommerce_api.entities.Country;
 import com.k41s.ecommerce_api.entities.Product;
+import com.k41s.ecommerce_api.enums.LogLevel;
 import com.k41s.ecommerce_api.exceptions.ResourceNotFoundException;
 import com.k41s.ecommerce_api.mappers.ProductMapper;
 import com.k41s.ecommerce_api.repositories.CategoryRepository;
@@ -11,7 +12,6 @@ import com.k41s.ecommerce_api.repositories.CountryRepository;
 import com.k41s.ecommerce_api.repositories.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -27,10 +26,11 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final CountryRepository countryRepository;
     private final ProductMapper mapper;
+    private final LogService logService;
 
     public Page<ProductDTO> getActiveProducts(String search, Integer categoryId, Pageable pageable) {
         String query = (search != null && !search.isBlank()) ? search : null;
-        log.info("Searching products with query: '{}', categoryId: {}", query, categoryId);
+        logService.log(LogLevel.Information, "Searching products with query: " + query + ", categoryId: " +  categoryId);
 
         return repository.search(query, categoryId, pageable)
                 .map(mapper::toDto);
@@ -43,7 +43,7 @@ public class ProductService {
                         "Product with ID " + id + " not found",
                         "PRODUCT_NOT_FOUND"
                 ));
-        log.info("Product with id={} retrieved", id);
+        logService.log(LogLevel.Information, "Product with ID " + id + " found");
         return dto;
     }
 
@@ -58,7 +58,7 @@ public class ProductService {
         if(!entity.isDeleted()){
             entity.setDeleted(true);
             repository.save(entity);
-            log.info("Product with id={} marked as deleted", id);
+            logService.log(LogLevel.Information, "Product with ID " + id + " marked as deleted");
         }
     }
 
@@ -75,7 +75,7 @@ public class ProductService {
         entity.setCountries(countries);
 
         Product savedEntity = repository.save(entity);
-        log.info("Product with id={} created", savedEntity.getId());
+        logService.log(LogLevel.Information, "Product with ID " + savedEntity.getId() + " created");
 
         return mapper.toDto(savedEntity);
     }
@@ -105,6 +105,6 @@ public class ProductService {
         }
 
         repository.save(existing);
-        log.info("Product with id={} updated", id);
+        logService.log(LogLevel.Information, "Product with ID " + id + " updated");
     }
 }
