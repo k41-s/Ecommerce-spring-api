@@ -1,0 +1,93 @@
+package com.k41s.ecommerce_api.security;
+
+import com.k41s.ecommerce_api.enums.LogLevel;
+import com.k41s.ecommerce_api.exceptions.JwtExpiredException;
+import com.k41s.ecommerce_api.exceptions.JwtMalformedException;
+import com.k41s.ecommerce_api.services.LogService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import java.io.IOException;
+
+@Component
+public class JwtAuthFilter extends OncePerRequestFilter {
+    private final JwtTokenProvider tokenProvider;
+    private final CustomUserDetailsService userDetailsService;
+    private final HandlerExceptionResolver resolver;
+    private final LogService logService;
+
+    private static final String HEADER_PREFIX = "Bearer ";
+
+    public JwtAuthFilter(
+            JwtTokenProvider tokenProvider,
+            CustomUserDetailsService userDetailsService,
+            @Qualifier("handlerExceptionResolver")
+            HandlerExceptionResolver resolver,
+            LogService logService) {
+        this.tokenProvider = tokenProvider;
+        this.userDetailsService = userDetailsService;
+        this.resolver = resolver;
+        this.logService = logService;
+    }
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+        try {
+            String jwt = getJwtFromRequest(request);
+            if (StringUtils.hasText(jwt)) {
+                String username = tokenProvider.getUsernameFromJWT(jwt);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (ExpiredJwtException ex) {
+            logService.log(LogLevel.Warning, "Jwt Expired: " +  ex.getMessage());
+
+            resolver.resolveException(request, response, null, new JwtExpiredException(ex.getMessage()));
+            return;
+        } catch (MalformedJwtException ex) {
+            logService.log(LogLevel.ERROR, "Invalid JWT Format: " + ex.getMessage());
+
+            resolver.resolveException(request, response, null, new JwtMalformedException(ex.getMessage()));
+            return;
+        } catch (Exception ex) {
+            logService.log(LogLevel.ERROR, "Could not set user authentication in security context or generic error: "
+                    + ex.getMessage());
+
+            resolver.resolveException(request, response, null, ex);
+            return;
+        }
+        filterChain.doFilter(request, response);
+    }
+
+    private String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(HEADER_PREFIX)) {
+            return bearerToken.substring(HEADER_PREFIX.length());
+        }
+        return null;
+    }
+}
