@@ -4,7 +4,6 @@ import com.k41s.ecommerce_api.dtos.ProductDTO;
 import com.k41s.ecommerce_api.entities.Category;
 import com.k41s.ecommerce_api.entities.Country;
 import com.k41s.ecommerce_api.entities.Product;
-import com.k41s.ecommerce_api.entities.ProductImage;
 import com.k41s.ecommerce_api.exceptions.ResourceNotFoundException;
 import com.k41s.ecommerce_api.mappers.ProductMapper;
 import com.k41s.ecommerce_api.repositories.CategoryRepository;
@@ -15,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,6 +47,7 @@ public class ProductService {
         return dto;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void softDelete(Integer id) {
         Product entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -61,6 +62,7 @@ public class ProductService {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductDTO create(ProductDTO dto) {
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Category Id"));
@@ -78,6 +80,7 @@ public class ProductService {
         return mapper.toDto(savedEntity);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void update(int id, ProductDTO updatedDto) {
         Product existing = repository.findById(id)

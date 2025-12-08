@@ -4,6 +4,7 @@ import com.k41s.ecommerce_api.entities.Log;
 import com.k41s.ecommerce_api.enums.LogLevel;
 import com.k41s.ecommerce_api.repositories.LogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class LogService {
         repo.save(log);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Log> getAll() {
         return repo.findAll();
     }

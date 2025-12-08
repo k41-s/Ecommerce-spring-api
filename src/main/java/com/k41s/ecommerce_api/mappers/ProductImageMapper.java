@@ -13,5 +13,6 @@ public interface ProductImageMapper {
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "data",  ignore = true)
+    @Mapping(target = "id", ignore = true)
     ProductImage toEntity(ProductImageDTO dto);
 }

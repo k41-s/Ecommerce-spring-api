@@ -3,6 +3,7 @@ package com.k41s.ecommerce_api.controllers;
 import com.k41s.ecommerce_api.dtos.ProductImageDTO;
 import com.k41s.ecommerce_api.entities.ProductImage;
 import com.k41s.ecommerce_api.services.ProductImageService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/productimages")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class ProductImageController {
     private final ProductImageService service;
 

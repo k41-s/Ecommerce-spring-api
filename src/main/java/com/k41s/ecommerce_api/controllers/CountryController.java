@@ -2,6 +2,7 @@ package com.k41s.ecommerce_api.controllers;
 
 import com.k41s.ecommerce_api.dtos.CountryDTO;
 import com.k41s.ecommerce_api.services.CountryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/countries")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class CountryController {
 
     private final CountryService service;
@@ -37,11 +39,8 @@ public class CountryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        boolean deleted = service.delete(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build(); // 204
-        } else {
-            return ResponseEntity.notFound().build();  // 404
-        }
+        return service.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

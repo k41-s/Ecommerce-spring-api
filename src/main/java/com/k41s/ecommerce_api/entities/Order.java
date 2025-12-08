@@ -1,5 +1,4 @@
 package com.k41s.ecommerce_api.entities;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.k41s.ecommerce_api.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.Getter;

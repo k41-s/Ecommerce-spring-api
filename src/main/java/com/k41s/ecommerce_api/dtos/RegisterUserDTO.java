@@ -14,6 +14,5 @@ public class RegisterUserDTO {
     private Role role;
     private String email;
     private String phone;
-
 }
 

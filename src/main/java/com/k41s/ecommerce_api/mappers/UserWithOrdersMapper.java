@@ -9,6 +9,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring", uses = { OrderMapper.class })
 public interface UserWithOrdersMapper {
     UserWithOrdersDTO toDto(User user);
+
+    @Mapping(target = "id", ignore = true)
     User toEntity(UserWithOrdersDTO dto);
 
     @Mapping(target = "id", ignore = true)

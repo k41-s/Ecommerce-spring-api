@@ -2,6 +2,7 @@ package com.k41s.ecommerce_api.controllers;
 
 import com.k41s.ecommerce_api.dtos.ProductDTO;
 import com.k41s.ecommerce_api.services.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/products")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class ProductController {
     private final ProductService service;
 

@@ -9,6 +9,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface CountryMapper {
     CountryDTO toDto(Country country);
+
+    @Mapping(target = "id", ignore = true)
     Country toEntity(CountryDTO dto);
 
     @Mapping(target = "id", ignore = true)

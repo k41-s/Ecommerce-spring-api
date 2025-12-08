@@ -19,15 +19,17 @@ public interface ProductMapper {
             expression = "java(entity.getImages().stream().map(i -> i.getId()).toList())")
     ProductDTO toDto(Product entity);
 
-    // service handles images (next 2 methods)
+    // service handles images
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "countries", ignore = true)
     @Mapping(target = "images", ignore = true)
+    @Mapping(target = "id", ignore = true)
     Product toEntity(ProductDTO dto);
 
 
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "countries", ignore = true)
     @Mapping(target = "images", ignore = true)
+    @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(ProductDTO dto, @MappingTarget Product entity);
 }

@@ -6,10 +6,10 @@ import com.k41s.ecommerce_api.exceptions.ResourceNotFoundException;
 import com.k41s.ecommerce_api.mappers.CountryMapper;
 import com.k41s.ecommerce_api.repositories.CountryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,12 +33,14 @@ public class CountryService {
                 ));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public CountryDTO create(CountryDTO dto) {
         return mapper.toDto(
                 repository.save(mapper.toEntity(dto))
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void update(int id, CountryDTO updated) {
         Country existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -49,6 +51,7 @@ public class CountryService {
         repository.save(existing);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public boolean delete(int id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);

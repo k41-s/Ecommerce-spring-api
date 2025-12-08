@@ -1,8 +1,8 @@
 package com.k41s.ecommerce_api.enums;
 
 public enum LogLevel {
-    INFO,
-    WARNING,
+    Information,
+    Warning,
     ERROR,
-    DEBUG
+    Debug
 }

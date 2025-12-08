@@ -14,5 +14,4 @@ public class AuthenticatedUserDTO {
     private String name;
     private String surname;
     private String phone;
-
 }

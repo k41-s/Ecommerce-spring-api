@@ -1,18 +1,17 @@
 package com.k41s.ecommerce_api.controllers;
 
 import com.k41s.ecommerce_api.dtos.CategoryDTO;
-import com.k41s.ecommerce_api.mappers.CategoryMapper;
 import com.k41s.ecommerce_api.services.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("api/categories")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class CategoryController {
     private final CategoryService service;
 
@@ -39,11 +38,8 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        boolean deleted = service.delete(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build(); // 204
-        } else {
-            return ResponseEntity.notFound().build();  // 404
-        }
+        return service.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }
