@@ -15,7 +15,7 @@ public class ProductDTO {
     public String description;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "0.00")
-    private BigDecimal price;
+    public BigDecimal price;
 
     public boolean isDeleted;
     public int categoryId;

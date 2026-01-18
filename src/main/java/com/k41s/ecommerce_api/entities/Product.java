@@ -15,7 +15,7 @@ public class Product extends BaseEntity {
     private String name;
     private String description;
 
-    @Column(precision = 18, scale = 2)
+    @Column(name = "Price", precision = 18, scale = 2)
     private BigDecimal price;
 
     private boolean isDeleted;
