@@ -33,14 +33,14 @@ public class CountryService {
                 ));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public CountryDTO create(CountryDTO dto) {
         return mapper.toDto(
                 repository.save(mapper.toEntity(dto))
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public void update(int id, CountryDTO updated) {
         Country existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -51,7 +51,7 @@ public class CountryService {
         repository.save(existing);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public boolean delete(int id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);

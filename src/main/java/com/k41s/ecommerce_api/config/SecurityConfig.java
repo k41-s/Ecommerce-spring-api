@@ -46,6 +46,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((
+                                request,
+                                response,
+                                authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("Error: Unauthorized - Please login.");
+                        })
                         .accessDeniedHandler((
                                 request,
                                 response,

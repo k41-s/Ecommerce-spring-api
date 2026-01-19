@@ -33,14 +33,14 @@ public class CategoryService {
                 ));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public CategoryDTO create(CategoryDTO dto) {
         return mapper.toDto(
                 repository.save(mapper.toEntity(dto))
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public void update(int id, CategoryDTO updated) {
         Category existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -51,7 +51,7 @@ public class CategoryService {
         repository.save(existing);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public boolean delete(int id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);

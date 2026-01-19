@@ -55,6 +55,17 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    // Inside JwtTokenProvider.java
+    public String getRolesFromJWT(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(this.key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("roles", String.class);
+    }
+
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(this.key)

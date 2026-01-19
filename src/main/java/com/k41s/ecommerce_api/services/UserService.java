@@ -24,7 +24,7 @@ public class UserService {
     private final UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public List<UserDTO> getAll() {
         return repository
                 .findAll()
@@ -82,7 +82,7 @@ public class UserService {
         return false;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public List<UserWithOrdersDTO> getUsersWithOrders() {
         return repository.findAllWithOrders()
                 .stream()

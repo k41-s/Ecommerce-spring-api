@@ -23,7 +23,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final OrderMapper mapper;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public List<OrderDTO> getAll() {
         return repository.findAllOrdersProjected();
     }
@@ -39,7 +39,7 @@ public class OrderService {
         return orderDTOs;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public OrderDTO create(OrderDTO dto) {
         Product product = checkProductValidity(dto.getProductId());
         Order order = mapper.toEntity(dto);

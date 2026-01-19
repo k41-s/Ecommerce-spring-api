@@ -25,7 +25,7 @@ public class LogService {
         repo.save(log);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public List<Log> getAll() {
         return repo.findAll();
     }
