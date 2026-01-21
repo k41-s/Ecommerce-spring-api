@@ -21,7 +21,7 @@ public class Product extends BaseEntity {
     private boolean isDeleted;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductImage> images;
+    private List<ProductImage> images = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "CategoryId", nullable = false)
