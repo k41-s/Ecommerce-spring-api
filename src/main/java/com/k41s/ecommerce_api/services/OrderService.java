@@ -3,11 +3,14 @@ package com.k41s.ecommerce_api.services;
 import com.k41s.ecommerce_api.dtos.OrderDTO;
 import com.k41s.ecommerce_api.entities.Order;
 import com.k41s.ecommerce_api.entities.Product;
+import com.k41s.ecommerce_api.entities.User;
 import com.k41s.ecommerce_api.exceptions.ProductOrderException;
 import com.k41s.ecommerce_api.exceptions.ResourceNotFoundException;
 import com.k41s.ecommerce_api.mappers.OrderMapper;
 import com.k41s.ecommerce_api.repositories.OrderRepository;
 import com.k41s.ecommerce_api.repositories.ProductRepository;
+import com.k41s.ecommerce_api.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ public class OrderService {
 
     private final OrderRepository repository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
     private final OrderMapper mapper;
 
     @PreAuthorize("hasRole('Admin')")
@@ -39,11 +43,16 @@ public class OrderService {
         return orderDTOs;
     }
 
-    @PreAuthorize("hasRole('Admin')")
     public OrderDTO create(OrderDTO dto) {
         Product product = checkProductValidity(dto.getProductId());
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
         Order order = mapper.toEntity(dto);
+
         order.setProduct(product);
+        order.setUser(user);
+
         Order savedOrder = repository.save(order);
         return mapper.toDto(savedOrder);
     }
