@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 @Setter
 public class OrderDTO {
     public Integer id;
-    public int productId;
+    public Integer productId;
     public String productName;
     public Boolean isProductDeleted;
     public Integer mainImgId;
-    public int userId;
+    public Integer userId;
     public String userName;
     public LocalDateTime orderedAt;
     public PaymentMethod paymentMethod;

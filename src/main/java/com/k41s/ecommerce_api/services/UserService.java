@@ -7,6 +7,7 @@ import com.k41s.ecommerce_api.entities.User;
 import com.k41s.ecommerce_api.exceptions.ResourceNotFoundException;
 import com.k41s.ecommerce_api.exceptions.UserValidationException;
 import com.k41s.ecommerce_api.mappers.UserMapper;
+import com.k41s.ecommerce_api.mappers.UserWithOrdersMapper;
 import com.k41s.ecommerce_api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +22,8 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository repository;
-    private final UserMapper mapper;
+    private final UserMapper userMapper;
+    private final UserWithOrdersMapper userWithOrdersMapperMapper;
     private final PasswordEncoder passwordEncoder;
 
     @PreAuthorize("hasRole('Admin')")
@@ -29,13 +31,13 @@ public class UserService {
         return repository
                 .findAll()
                 .stream()
-                .map(mapper::toDto)
+                .map(userMapper::toDto)
                 .toList();
     }
 
     public UserDTO getById(int id) {
         return repository.findById(id)
-                .map(mapper::toDto)
+                .map(userMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User with ID " + id + " not found",
                         "USER_NOT_FOUND"
@@ -44,7 +46,7 @@ public class UserService {
 
     public UserDTO getByEmail(String email) {
         return repository.findByEmail(email)
-                .map(mapper::toDto)
+                .map(userMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User with email " + email + " not found",
                         "USER_NOT_FOUND"
@@ -59,7 +61,7 @@ public class UserService {
                         "USER_NOT_FOUND"
                 ));
 
-        mapper.updateEntityFromDto(updated, existing);
+        userMapper.updateEntityFromDto(updated, existing);
         repository.save(existing);
     }
 
@@ -70,7 +72,7 @@ public class UserService {
                         "User with email " + email + " not found",
                         "USER_NOT_FOUND"
                 ));
-        mapper.updateEntityFromDto(dto, existing);
+        userMapper.updateEntityFromDto(dto, existing);
         repository.save(existing);
     }
 
@@ -83,10 +85,11 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('Admin')")
+    @Transactional(readOnly = true)
     public List<UserWithOrdersDTO> getUsersWithOrders() {
         return repository.findAllWithOrders()
                 .stream()
-                .map(mapper::toUserWithOrdersDTO)
+                .map(userWithOrdersMapperMapper::toDto)
                 .toList();
     }
 

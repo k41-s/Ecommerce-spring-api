@@ -2,6 +2,7 @@ package com.k41s.ecommerce_api.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SoftDelete;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

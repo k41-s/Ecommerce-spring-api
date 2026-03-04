@@ -10,8 +10,10 @@ import java.util.List;
 @Setter
 public class UserWithOrdersDTO {
     public String username;
+    public String email;
     public String name;
     public String surname;
+    public String phone;
     public Role role;
     public List<OrderDTO> orders;
 }

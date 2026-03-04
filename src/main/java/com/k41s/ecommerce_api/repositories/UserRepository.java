@@ -15,7 +15,8 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     Optional<User> findByUsername(String username);
 
     @Query("SELECT u FROM User u " +
-            "LEFT JOIN FETCH u.orders o " +
-            "LEFT JOIN FETCH o.product")
+            "JOIN FETCH u.orders o " +
+            "JOIN FETCH o.product p " +
+            "WHERE u.role != 'Admin' ")
     List<User> findAllWithOrders();
 }

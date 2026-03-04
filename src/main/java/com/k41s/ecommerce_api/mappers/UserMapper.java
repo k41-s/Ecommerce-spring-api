@@ -30,8 +30,6 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     User fromRegisterDto(RegisterUserDTO dto);
 
-    UserWithOrdersDTO toUserWithOrdersDTO(User user);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)
     @Mapping(target = "role", ignore = true)
