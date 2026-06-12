@@ -18,6 +18,7 @@ public interface UserMapper {
     User toEntity(UserDTO dto);
 
     @Mapping(target = "token", ignore = true)
+    @Mapping(target = "refreshToken", ignore = true)
     AuthenticatedUserDTO toAuthenticatedUserDto(User user);
 
     @Mapping(target = "id", ignore = true)

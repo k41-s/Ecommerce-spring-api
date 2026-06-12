@@ -5,6 +5,7 @@ import com.k41s.ecommerce_api.dtos.LoginDTO;
 import com.k41s.ecommerce_api.dtos.RegisterUserDTO;
 import com.k41s.ecommerce_api.entities.User;
 import com.k41s.ecommerce_api.enums.Role;
+import com.k41s.ecommerce_api.exceptions.JwtMalformedException;
 import com.k41s.ecommerce_api.exceptions.UserValidationException;
 import com.k41s.ecommerce_api.mappers.UserMapper;
 import com.k41s.ecommerce_api.repositories.UserRepository;
@@ -59,13 +60,40 @@ public class AuthService {
         return generateTokenAndMapDTO(authentication);
     }
 
+    public AuthenticatedUserDTO refreshAccessToken(String refreshToken) {
+        if (!tokenProvider.validateToken(refreshToken)) {
+            throw new JwtMalformedException("Invalid refresh token");
+        }
+
+        String tokenType = tokenProvider.getTokenTypeFromJWT(refreshToken);
+        if (!"refresh".equals(tokenType)) {
+            throw new JwtMalformedException("Provided token is not a refresh token");
+        }
+
+        String username = tokenProvider.getUsernameFromJWT(refreshToken);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserValidationException("User not found"));
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+
+        return generateTokenAndMapDTO(authentication);
+    }
+
     private AuthenticatedUserDTO generateTokenAndMapDTO(Authentication authentication) {
-        String token = tokenProvider.generateToken(authentication);
+        String accessToken = tokenProvider.generateAccessToken(authentication);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication);
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         User user = userDetails.user();
         AuthenticatedUserDTO authUserDto = mapper.toAuthenticatedUserDto(user);
-        authUserDto.setToken(token);
+        authUserDto.setToken(accessToken);
+        authUserDto.setRefreshToken(refreshToken);
 
         return authUserDto;
     }

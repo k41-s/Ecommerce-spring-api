@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 public class AuthenticatedUserDTO {
     private String token;
+    private String refreshToken;
     private String username;
     private String email;
     private Role role;

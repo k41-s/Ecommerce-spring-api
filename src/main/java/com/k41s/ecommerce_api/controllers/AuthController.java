@@ -2,6 +2,7 @@ package com.k41s.ecommerce_api.controllers;
 
 import com.k41s.ecommerce_api.dtos.AuthenticatedUserDTO;
 import com.k41s.ecommerce_api.dtos.LoginDTO;
+import com.k41s.ecommerce_api.dtos.RefreshTokenRequestDTO;
 import com.k41s.ecommerce_api.dtos.RegisterUserDTO;
 import com.k41s.ecommerce_api.services.AuthService;
 import jakarta.validation.Valid;
@@ -29,5 +30,10 @@ public class AuthController {
         AuthenticatedUserDTO authUserDto = service.registerAndLogin(registerDto);
 
         return new ResponseEntity<>(authUserDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticatedUserDTO> refresh(@Valid @RequestBody RefreshTokenRequestDTO requestDTO) {
+        return ResponseEntity.ok(service.refreshAccessToken(requestDTO.getRefreshToken()));
     }
 }

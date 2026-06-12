@@ -24,21 +24,31 @@ public class JwtTokenProvider {
     private final SecretKey key;
     private final String issuer;
     private final String audience;
-    private final long expirationMillis;
+    private final long accessExpirationMillis;
+    private final long refreshExpirationMillis;
 
     public JwtTokenProvider(JwtProperties jwtProperties) {
         this.issuer = jwtProperties.getJwtIssuer();
         this.audience = jwtProperties.getJwtAudience();
-        this.expirationMillis = TimeUnit.HOURS.toMillis(jwtProperties.getJwtExpirationHours());
+        this.accessExpirationMillis = TimeUnit.MINUTES.toMillis(jwtProperties.getJwtExpirationMinutes());
+        this.refreshExpirationMillis = TimeUnit.DAYS.toMillis(jwtProperties.getJwtRefreshExpirationDays());
 
         byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getJwtSecret());
         this.key = Keys.hmacShaKeyFor(keyBytes);    }
 
-    public String generateToken(Authentication authentication) {
+    public String generateAccessToken(Authentication authentication) {
+        return buildToken(authentication, this.accessExpirationMillis, "access");
+    }
+
+    public String generateRefreshToken(Authentication authentication) {
+        return buildToken(authentication, this.refreshExpirationMillis, "refresh");
+    }
+
+    private String buildToken(Authentication authentication, long expirationMillis, String tokenType) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + this.expirationMillis);
+        Date expiryDate = new Date(now.getTime() + expirationMillis);
 
         String roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -49,6 +59,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .claim("roles", roles)
+                .claim("token_type", tokenType)
                 .setIssuer(this.issuer)
                 .setAudience(this.audience)
                 .signWith(this.key)
@@ -75,9 +86,13 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
+    public String getTokenTypeFromJWT(String token) {
+        Claims claims = Jwts.parserBuilder().setSigningKey(this.key).build().parseClaimsJws(token).getBody();
+        return claims.get("token_type", String.class);
+    }
+
     public boolean validateToken(String authToken) {
         try {
-            // **JJWT v0.11.5 API:** Jwts.parserBuilder() followed by .setSigningKey()
             Jwts.parserBuilder()
                     .setSigningKey(this.key)
                     .build()

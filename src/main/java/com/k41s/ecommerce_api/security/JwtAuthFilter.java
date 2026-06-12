@@ -56,6 +56,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+
+                String tokenType = tokenProvider.getTokenTypeFromJWT(jwt);
+                if (!"access".equals(tokenType)) {
+                    throw new MalformedJwtException("Provided token is not an access token");
+                }
+
                 String username = tokenProvider.getUsernameFromJWT(jwt);
                 String rolesString = tokenProvider.getRolesFromJWT(jwt);
 

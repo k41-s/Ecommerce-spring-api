@@ -13,5 +13,8 @@ public class JwtProperties {
     private String jwtSecret;
     private String jwtIssuer;
     private String jwtAudience;
+
     private int jwtExpirationHours;
+    private int jwtExpirationMinutes = 15;
+    private int jwtRefreshExpirationDays = 7;
 }
