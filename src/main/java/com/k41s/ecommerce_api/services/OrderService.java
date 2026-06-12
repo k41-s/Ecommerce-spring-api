@@ -1,7 +1,9 @@
 package com.k41s.ecommerce_api.services;
 
 import com.k41s.ecommerce_api.dtos.OrderDTO;
+import com.k41s.ecommerce_api.dtos.OrderItemDTO;
 import com.k41s.ecommerce_api.entities.Order;
+import com.k41s.ecommerce_api.entities.OrderItem;
 import com.k41s.ecommerce_api.entities.Product;
 import com.k41s.ecommerce_api.entities.User;
 import com.k41s.ecommerce_api.exceptions.ProductOrderException;
@@ -15,8 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,29 +35,42 @@ public class OrderService {
 
     @PreAuthorize("hasRole('Admin')")
     public List<OrderDTO> getAll() {
-        return repository.findAllOrdersProjected();
+        return repository.findAllWithItems()
+                .stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public List<OrderDTO> getUserOrders(Integer userId) {
-        List<OrderDTO> orderDTOs = repository.findUserOrdersProjected(userId);
-        if (orderDTOs.isEmpty()) {
-            throw new ResourceNotFoundException(
-                    "No orders found for user id: " + userId,
-                    "ORDER_NOT_FOUND"
-            );
+        List<Order> orders = repository.findByUserIdWithItems(userId);
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("No orders found for user id: " + userId, "ORDER_NOT_FOUND");
         }
-        return orderDTOs;
+        return orders.stream().map(mapper::toDto).collect(Collectors.toList());
     }
 
     public OrderDTO create(OrderDTO dto) {
-        Product product = checkProductValidity(dto.getProductId());
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Order order = mapper.toEntity(dto);
-
-        order.setProduct(product);
         order.setUser(user);
+        order.setOrderedAt(LocalDateTime.now());
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        if (dto.getItems() != null) {
+            for (OrderItemDTO itemDto : dto.getItems()) {
+                Product product = checkProductValidity(itemDto.getProductId());
+
+                OrderItem item = new OrderItem();
+                item.setProduct(product);
+                item.setQuantity(itemDto.getQuantity());
+                item.setOrder(order);
+
+                orderItems.add(item);
+            }
+        }
+        order.setItems(new HashSet<>(orderItems));
 
         Order savedOrder = repository.save(order);
         return mapper.toDto(savedOrder);

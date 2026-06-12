@@ -11,39 +11,10 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    @Query("SELECT new com.k41s.ecommerce_api.dtos.OrderDTO(" +
-            "o.id, " +
-            "p.id, " +
-            "p.name, " +
-            "p.isDeleted, " +
-            "u.id, " +
-            "CONCAT(u.name, ' ', u.surname), " +
-            "o.orderedAt, " +
-            "o.paymentMethod, " +
-            "o.notes, " +
-            " (SELECT pi.id FROM ProductImage pi WHERE pi.product.id = p.id ORDER BY pi.id ASC LIMIT 1) " +
-            ") FROM Order o " +
-            "JOIN o.product p " +
-            "JOIN o.user u " +
-            "ORDER BY o.orderedAt DESC")
-    List<OrderDTO> findAllOrdersProjected();
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items i LEFT JOIN FETCH i.product LEFT JOIN FETCH o.user")
+    List<Order> findAllWithItems();
 
-    @Query("SELECT new com.k41s.ecommerce_api.dtos.OrderDTO(" +
-            "o.id, " +
-            "p.id, " +
-            "p.name, " +
-            "p.isDeleted, " +
-            "u.id, " +
-            "CONCAT(u.name, ' ', u.surname), " +
-            "o.orderedAt, " +
-            "o.paymentMethod, " +
-            "o.notes, " +
-            " (SELECT pi.id FROM ProductImage pi WHERE pi.product.id = p.id ORDER BY pi.id ASC LIMIT 1) " +
-            ") FROM Order o " +
-            "JOIN o.product p " +
-            "JOIN o.user u " +
-            "WHERE o.user.id = :userId " +
-            "ORDER BY o.orderedAt DESC")
-    List<OrderDTO> findUserOrdersProjected(@Param("userId") Integer userId);
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items i LEFT JOIN FETCH i.product WHERE o.user.id = :userId")
+    List<Order> findByUserIdWithItems(@Param("userId") Integer userId);
 
 }

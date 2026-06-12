@@ -1,11 +1,12 @@
 package com.k41s.ecommerce_api.entities;
+
 import com.k41s.ecommerce_api.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -31,5 +32,5 @@ public class User extends BaseEntity {
     private String phone;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Order> orders = new ArrayList<>();
+    private Set<Order> orders = new HashSet<>();
 }

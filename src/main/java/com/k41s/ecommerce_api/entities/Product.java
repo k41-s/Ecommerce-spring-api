@@ -1,12 +1,14 @@
 package com.k41s.ecommerce_api.entities;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SoftDelete;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -37,5 +39,5 @@ public class Product extends BaseEntity {
     private List<Country> countries = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Order> orders = new ArrayList<>();
+    private Set<OrderItem> orderItems = new HashSet<>();
 }

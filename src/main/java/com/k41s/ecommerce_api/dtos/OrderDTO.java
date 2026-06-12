@@ -1,37 +1,24 @@
 package com.k41s.ecommerce_api.dtos;
 
 import com.k41s.ecommerce_api.enums.PaymentMethod;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderDTO {
-    public Integer id;
-    public Integer productId;
-    public String productName;
-    public Boolean isProductDeleted;
-    public Integer mainImgId;
-    public Integer userId;
-    public String userName;
-    public LocalDateTime orderedAt;
-    public PaymentMethod paymentMethod;
-    public String notes;
-
-    public OrderDTO(Integer id, Integer productId, String productName, Boolean isProductDeleted,
-                    Integer userId, String userName, LocalDateTime orderedAt, PaymentMethod paymentMethod,
-                    String notes, Integer mainImageId) {
-        this.id = id;
-        this.productId = productId;
-        this.productName = productName;
-        this.isProductDeleted = isProductDeleted;
-        this.userId = userId;
-        this.userName = userName;
-        this.orderedAt = orderedAt;
-        this.paymentMethod = paymentMethod;
-        this.notes = notes;
-        this.mainImgId = mainImageId;
-    }
+    private Integer id;
+    private Integer userId;
+    private String userName;
+    private LocalDateTime orderedAt;
+    private PaymentMethod paymentMethod;
+    private String notes;
+    private List<OrderItemDTO> items;
 }
