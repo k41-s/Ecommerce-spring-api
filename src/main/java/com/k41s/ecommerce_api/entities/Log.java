@@ -16,7 +16,7 @@ public class Log extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private LogLevel level;
 
-    @Column(columnDefinition = "nvarchar(max)")
+    @Column(columnDefinition = "TEXT")
     private String message;
 
 }
