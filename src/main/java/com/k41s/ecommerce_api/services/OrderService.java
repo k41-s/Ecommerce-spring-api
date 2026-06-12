@@ -76,6 +76,17 @@ public class OrderService {
         return mapper.toDto(savedOrder);
     }
 
+    public List<OrderDTO> getUserOrdersByDateRange(Integer userId, LocalDateTime start, LocalDateTime end) {
+        List<Order> orders = repository.findByUserIdAndOrderedAtBetweenWithItems(userId, start, end);
+
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("No orders found for user id: " +
+                    userId + " in the specified date range.", "ORDER_NOT_FOUND");
+        }
+
+        return orders.stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+
     private Product checkProductValidity(Integer productId) {
         Optional<Product> productOpt = productRepository.findById(productId);
         if (productOpt.isEmpty()) {
