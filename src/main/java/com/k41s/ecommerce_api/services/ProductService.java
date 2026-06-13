@@ -10,12 +10,12 @@ import com.k41s.ecommerce_api.mappers.ProductMapper;
 import com.k41s.ecommerce_api.repositories.CategoryRepository;
 import com.k41s.ecommerce_api.repositories.CountryRepository;
 import com.k41s.ecommerce_api.repositories.ProductRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +28,7 @@ public class ProductService {
     private final ProductMapper mapper;
     private final LogService logService;
 
+    @Transactional(readOnly = true)
     public Page<ProductDTO> getActiveProducts(String search, Integer categoryId, Pageable pageable) {
         String query = (search != null && !search.isBlank()) ? search : null;
         logService.log(LogLevel.Information, "Searching products with query: " + query + ", categoryId: " +  categoryId);
@@ -36,6 +37,7 @@ public class ProductService {
                 .map(mapper::toDto);
     }
 
+    @Transactional(readOnly = true)
     public ProductDTO getActiveProductById(int id) {
         ProductDTO dto = repository.findActiveById(id)
                 .map(mapper::toDto)

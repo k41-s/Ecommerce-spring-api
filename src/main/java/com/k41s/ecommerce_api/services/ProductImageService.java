@@ -10,6 +10,7 @@ import com.k41s.ecommerce_api.repositories.ProductImageRepository;
 import com.k41s.ecommerce_api.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,6 +23,7 @@ public class ProductImageService {
     private final ProductRepository productRepository;
     private final ProductImageMapper mapper;
 
+    @Transactional
     public ProductImage getImageEntityById(int id) {
         ProductImage image = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -34,6 +36,7 @@ public class ProductImageService {
         return image;
     }
 
+    @Transactional
     public ProductImageDTO uploadImage(int productId, MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("No file uploaded.");
