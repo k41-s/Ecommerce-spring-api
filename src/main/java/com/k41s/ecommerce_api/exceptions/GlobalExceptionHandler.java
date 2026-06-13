@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -101,6 +102,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
         logService.log(LogLevel.ERROR, ex.getMessage());
         return new ResponseEntity<>("Forbidden: You do not have the required permissions.", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+        logService.log(LogLevel.Warning, "Failed login attempt: Incorrect password or username.");
+
+        ErrorResponse err = new ErrorResponse();
+        err.setErrorCode("BAD_CREDENTIALS");
+        err.setMessage("Invalid username or password. Please try again.");
+        err.setStatus(HttpStatus.UNAUTHORIZED.value());
+        err.setTimestamp(Instant.now());
+        err.setPath(request.getRequestURI());
+
+        return new ResponseEntity<>(err, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
