@@ -22,10 +22,8 @@ public interface UserWithOrdersMapper {
         }
     }
 
-    @Mapping(target = "id", ignore = true)
     User toEntity(UserWithOrdersDTO dto);
 
-    @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(UserWithOrdersDTO dto, @MappingTarget User entity);
 
 }

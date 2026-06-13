@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class UserWithOrdersDTO {
+    public Integer id;
     public String username;
     public String email;
     public String name;
