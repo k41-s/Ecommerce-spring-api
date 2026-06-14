@@ -17,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -89,7 +90,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             resolver.resolveException(request, response, null, new JwtMalformedException(ex.getMessage()));
             return;
-        } catch (Exception ex) {
+        } catch (UsernameNotFoundException ex) {
+            logService.log(LogLevel.Warning, "Token valid, but user deleted: " + ex.getMessage());
+        }
+        catch (Exception ex) {
             logService.log(LogLevel.ERROR, "Could not set user authentication in security context or generic error: "
                     + ex.getMessage());
 

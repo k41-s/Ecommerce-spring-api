@@ -76,12 +76,23 @@ public class UserService {
         repository.save(existing);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     public boolean delete(int id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public void deleteProfile(Integer userId) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User not found",
+                        "USER_NOT_FOUND"
+                ));
+        repository.delete(user);
     }
 
     @PreAuthorize("hasRole('Admin')")

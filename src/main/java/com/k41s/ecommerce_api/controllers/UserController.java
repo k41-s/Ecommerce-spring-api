@@ -3,11 +3,13 @@ package com.k41s.ecommerce_api.controllers;
 import com.k41s.ecommerce_api.dtos.ChangePasswordDTO;
 import com.k41s.ecommerce_api.dtos.UserDTO;
 import com.k41s.ecommerce_api.dtos.UserWithOrdersDTO;
+import com.k41s.ecommerce_api.security.CustomUserDetails;
 import com.k41s.ecommerce_api.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,5 +65,11 @@ public class UserController {
         return service.delete(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/profile")
+    public ResponseEntity<Void> deleteMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        service.deleteProfile(userDetails.user().getId());
+        return ResponseEntity.noContent().build();
     }
 }
