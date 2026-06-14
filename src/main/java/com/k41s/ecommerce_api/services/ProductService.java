@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository repository;
@@ -28,7 +29,6 @@ public class ProductService {
     private final ProductMapper mapper;
     private final LogService logService;
 
-    @Transactional(readOnly = true)
     public Page<ProductDTO> getActiveProducts(String search, Integer categoryId, Pageable pageable) {
         String query = (search != null && !search.isBlank()) ? search : null;
         logService.log(LogLevel.Information, "Searching products with query: " + query + ", categoryId: " +  categoryId);
@@ -37,7 +37,6 @@ public class ProductService {
                 .map(mapper::toDto);
     }
 
-    @Transactional(readOnly = true)
     public ProductDTO getActiveProductById(int id) {
         ProductDTO dto = repository.findActiveById(id)
                 .map(mapper::toDto)
@@ -49,6 +48,7 @@ public class ProductService {
         return dto;
     }
 
+    @Transactional
     @PreAuthorize("hasRole('Admin')")
     public void softDelete(Integer id) {
         Product entity = repository.findById(id)
@@ -64,6 +64,7 @@ public class ProductService {
         }
     }
 
+    @Transactional
     @PreAuthorize("hasRole('Admin')")
     public ProductDTO create(ProductDTO dto) {
         Category category = categoryRepository.findById(dto.getCategoryId())
@@ -82,8 +83,8 @@ public class ProductService {
         return mapper.toDto(savedEntity);
     }
 
-    @PreAuthorize("hasRole('Admin')")
     @Transactional
+    @PreAuthorize("hasRole('Admin')")
     public void update(int id, ProductDTO updatedDto) {
         Product existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
