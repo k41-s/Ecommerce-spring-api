@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.k41s.ecommerce_api.dtos.paypal.PayPalOrderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -105,9 +106,12 @@ public class PayPalService {
         Map<String, Object> purchaseUnit = new HashMap<>();
         purchaseUnit.put("amount", amount);
 
+        Map<String, Object> applicationContext = getApplicationContext();
+
         Map<String, Object> payload = new HashMap<>();
         payload.put("intent", "CAPTURE");
         payload.put("purchase_units", List.of(purchaseUnit));
+        payload.put("application_context", applicationContext);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
@@ -131,6 +135,18 @@ public class PayPalService {
             log.error("Failed to create PayPal order", e);
             throw new RuntimeException("Could not initialize payment");
         }
+    }
+
+    private static @NonNull Map<String, Object> getApplicationContext() {
+        Map<String, Object> applicationContext = new HashMap<>();
+        applicationContext.put("user_action", "PAY_NOW");
+
+        String myServerUrl = "https://conformal-eula-nonapostolically.ngrok-free.dev";
+
+        applicationContext.put("return_url", myServerUrl + "/payment/success");
+        applicationContext.put("cancel_url", myServerUrl + "/payment/cancel");
+
+        return applicationContext;
     }
 
     public boolean captureOrder(String paypalOrderId) {

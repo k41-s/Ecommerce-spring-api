@@ -38,7 +38,11 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/api/webhooks/paypal").permitAll()
+                        .requestMatchers(
+                                "/api/webhooks/paypal",
+                                "/payment/success",
+                                "/payment/cancel"
+                        ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
                         .requestMatchers(
