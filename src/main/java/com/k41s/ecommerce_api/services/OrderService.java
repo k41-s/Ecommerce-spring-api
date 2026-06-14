@@ -44,7 +44,7 @@ public class OrderService {
 
     private final PayPalService payPalService;
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<OrderDTO> getAll() {
         return repository.findAllWithItems()
                 .stream()

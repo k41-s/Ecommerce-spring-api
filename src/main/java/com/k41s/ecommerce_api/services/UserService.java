@@ -30,7 +30,7 @@ public class UserService {
     private static final String USER_NOT_FOUND = "USER_NOT_FOUND";
     private static final String USER_WITH_ID = "User with ID ";
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserDTO> getAll() {
         return repository
                 .findAll()
@@ -80,7 +80,7 @@ public class UserService {
         repository.save(existing);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public boolean delete(int id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
@@ -99,7 +99,7 @@ public class UserService {
         repository.delete(user);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public List<UserWithOrdersDTO> getUsersWithOrders() {
         return repository.findAllWithOrders()

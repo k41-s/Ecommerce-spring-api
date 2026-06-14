@@ -53,7 +53,7 @@ public class ProductService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void softDelete(Integer id) {
         Product entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -69,7 +69,7 @@ public class ProductService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductDTO create(ProductDTO dto) {
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Category Id"));
@@ -88,7 +88,7 @@ public class ProductService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void update(int id, ProductDTO updatedDto) {
         Product existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(

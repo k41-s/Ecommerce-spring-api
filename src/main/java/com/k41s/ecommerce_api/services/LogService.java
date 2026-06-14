@@ -30,7 +30,7 @@ public class LogService {
         repo.save(log);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Log> getAll() {
         return repo.findAll(Sort.by(Sort.Direction.DESC, "timestamp"));
     }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public enum PaymentMethod {
     @JsonProperty("Card")
     CARD,
-    @JsonProperty("PayPal")
+    @JsonProperty("Paypal")
     PAYPAL,
     @JsonProperty("Bank_Transfer")
     BANK_TRANSFER,
