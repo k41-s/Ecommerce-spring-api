@@ -33,4 +33,7 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Order> orders = new HashSet<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = false)
+    private Cart cart;
 }
