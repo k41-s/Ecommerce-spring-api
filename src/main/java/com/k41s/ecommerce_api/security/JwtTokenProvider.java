@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -47,8 +47,8 @@ public class JwtTokenProvider {
     private String buildToken(Authentication authentication, long expirationMillis, String tokenType) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expirationMillis);
+        Instant now = java.time.Instant.now();
+        Instant expiryDate = now.plusMillis(expirationMillis);
 
         String roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -56,8 +56,8 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
+                .setIssuedAt(java.util.Date.from(now))
+                .setExpiration(java.util.Date.from(expiryDate))
                 .claim("roles", roles)
                 .claim("token_type", tokenType)
                 .setIssuer(this.issuer)

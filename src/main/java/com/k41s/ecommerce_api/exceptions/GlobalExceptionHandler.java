@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JwtExpiredException.class)
     public ResponseEntity<ErrorResponse> handleJwtExpiredException(JwtExpiredException ex, HttpServletRequest request) {
-        logService.log(LogLevel.Warning, "JWT Expired: " + ex.getMessage());
+        logService.log(LogLevel.WARNING, "JWT Expired: " + ex.getMessage());
 
         ErrorResponse err = new ErrorResponse();
         err.setErrorCode("JWT_EXPIRED");
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
-        logService.log(LogLevel.Warning, "Failed login attempt: Incorrect password or username.");
+        logService.log(LogLevel.WARNING, "Failed login attempt: Incorrect password or username.");
 
         ErrorResponse err = new ErrorResponse();
         err.setErrorCode("BAD_CREDENTIALS");
@@ -116,6 +116,17 @@ public class GlobalExceptionHandler {
         err.setPath(request.getRequestURI());
 
         return new ResponseEntity<>(err, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(PaymentGatewayException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentException(PaymentGatewayException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus( HttpStatus.BAD_GATEWAY.value());
+        errorResponse.setErrorCode("BAD_GATEWAY");
+        errorResponse.setMessage("Payment Processing Failed" + ex.getMessage());
+        errorResponse.setTimestamp(Instant.now());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_GATEWAY);
     }
 
     @ExceptionHandler(Exception.class)

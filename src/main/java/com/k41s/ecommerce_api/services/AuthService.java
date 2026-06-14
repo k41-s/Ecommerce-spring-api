@@ -47,7 +47,7 @@ public class AuthService {
         User user = mapper.fromRegisterDto(dto);
         String rawPassword = dto.getPassword();
         user.setPasswordHash(passwordEncoder.encode(rawPassword));
-        user.setRole(Role.User);
+        user.setRole(Role.USER);
 
         Cart cart = new Cart();
         cart.setUser(user);

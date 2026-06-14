@@ -23,7 +23,7 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<List<UserDTO>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 

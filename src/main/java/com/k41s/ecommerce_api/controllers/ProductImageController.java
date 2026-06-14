@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductImageController {
     private final ProductImageService service;
 
-    // GET: api/productimages/5
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getProductImage(@PathVariable int id) {
         ProductImage image = service.getImageEntityById(id);
@@ -31,7 +30,6 @@ public class ProductImageController {
                 .body(image.getData());
     }
 
-    // POST: api/productimages/upload/{productId}
     @PostMapping("/upload/{productId}")
     public ResponseEntity<ProductImageDTO> uploadImage(
             @PathVariable int productId,
@@ -41,7 +39,6 @@ public class ProductImageController {
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
-    // DELETE: api/productimages/5
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProductImage(@PathVariable int id) {
         return service.deleteImage(id)

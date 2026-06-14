@@ -1,6 +1,5 @@
 package com.k41s.ecommerce_api.repositories;
 
-import com.k41s.ecommerce_api.dtos.OrderDTO;
 import com.k41s.ecommerce_api.entities.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -9,12 +9,12 @@ import java.util.List;
 @Getter
 @Setter
 public class UserWithOrdersDTO {
-    public Integer id;
-    public String username;
-    public String email;
-    public String name;
-    public String surname;
-    public String phone;
-    public Role role;
-    public List<OrderDTO> orders;
+    private Integer id;
+    private String username;
+    private String email;
+    private String name;
+    private String surname;
+    private String phone;
+    private Role role;
+    private List<OrderDTO> orders;
 }

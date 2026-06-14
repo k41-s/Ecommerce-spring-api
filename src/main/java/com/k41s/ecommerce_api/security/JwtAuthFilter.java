@@ -10,7 +10,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -81,7 +80,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (ExpiredJwtException ex) {
-            logService.log(LogLevel.Warning, "Jwt Expired: " +  ex.getMessage());
+            logService.log(LogLevel.WARNING, "Jwt Expired: " +  ex.getMessage());
 
             resolver.resolveException(request, response, null, new JwtExpiredException(ex.getMessage()));
             return;
@@ -91,7 +90,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             resolver.resolveException(request, response, null, new JwtMalformedException(ex.getMessage()));
             return;
         } catch (UsernameNotFoundException ex) {
-            logService.log(LogLevel.Warning, "Token valid, but user deleted: " + ex.getMessage());
+            logService.log(LogLevel.WARNING, "Token valid, but user deleted: " + ex.getMessage());
         }
         catch (Exception ex) {
             logService.log(LogLevel.ERROR, "Could not set user authentication in security context or generic error: "

@@ -10,17 +10,17 @@ import java.util.List;
 @Getter
 @Setter
 public class ProductDTO {
-    public Integer id;
-    public String name;
-    public String description;
+    private Integer id;
+    private String name;
+    private String description;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "0.00")
     public BigDecimal price;
 
-    public boolean isDeleted;
-    public int categoryId;
-    public String categoryName;
-    public List<Integer> imageIds;
-    public List<Integer> countryIds;
-    public List<String> countryNames;
+    private boolean isDeleted;
+    private int categoryId;
+    private String categoryName;
+    private List<Integer> imageIds;
+    private List<Integer> countryIds;
+    private List<String> countryNames;
 }

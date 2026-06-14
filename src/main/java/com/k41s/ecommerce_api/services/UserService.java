@@ -26,6 +26,10 @@ public class UserService {
     private final UserWithOrdersMapper userWithOrdersMapperMapper;
     private final PasswordEncoder passwordEncoder;
 
+    private static final String NOT_FOUND = " not found";
+    private static final String USER_NOT_FOUND = "USER_NOT_FOUND";
+    private static final String USER_WITH_ID = "User with ID ";
+
     @PreAuthorize("hasRole('Admin')")
     public List<UserDTO> getAll() {
         return repository
@@ -39,8 +43,8 @@ public class UserService {
         return repository.findById(id)
                 .map(userMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "User with ID " + id + " not found",
-                        "USER_NOT_FOUND"
+                        USER_WITH_ID + id + NOT_FOUND,
+                        USER_NOT_FOUND
                 ));
     }
 
@@ -48,8 +52,8 @@ public class UserService {
         return repository.findByEmail(email)
                 .map(userMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "User with email " + email + " not found",
-                        "USER_NOT_FOUND"
+                        "User with email " + email + NOT_FOUND,
+                        USER_NOT_FOUND
                 ));
     }
 
@@ -57,8 +61,8 @@ public class UserService {
     public void update(int id, UserDTO updated) {
         User existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "User with ID " + id + " not found",
-                        "USER_NOT_FOUND"
+                        USER_WITH_ID + id + NOT_FOUND,
+                        USER_NOT_FOUND
                 ));
 
         userMapper.updateEntityFromDto(updated, existing);
@@ -69,8 +73,8 @@ public class UserService {
     public void updateProfileByEmail(String email, UserDTO dto) {
         User existing = repository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "User with email " + email + " not found",
-                        "USER_NOT_FOUND"
+                        "User with email " + email + NOT_FOUND,
+                        USER_NOT_FOUND
                 ));
         userMapper.updateEntityFromDto(dto, existing);
         repository.save(existing);
@@ -89,8 +93,8 @@ public class UserService {
     public void deleteProfile(Integer userId) {
         User user = repository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "User not found",
-                        "USER_NOT_FOUND"
+                        USER_WITH_ID + userId + NOT_FOUND,
+                        USER_NOT_FOUND
                 ));
         repository.delete(user);
     }

@@ -12,6 +12,8 @@ import com.k41s.ecommerce_api.repositories.CartRepository;
 import com.k41s.ecommerce_api.repositories.ProductRepository;
 import com.k41s.ecommerce_api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,12 @@ public class CartService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final CartMapper cartMapper;
+
+    private CartService self;
+    @Autowired
+    public void setSelf(@Lazy CartService self) {
+        this.self = self;
+    }
 
     private Cart getOrCreateCart(Integer userId) {
         return cartRepository.findByUserId(userId).orElseGet(() -> {
@@ -62,7 +70,7 @@ public class CartService {
         Cart cart = getOrCreateCart(userId);
 
         if (quantity <= 0) {
-            return removeItemFromCart(userId, productId);
+            return self.removeItemFromCart(userId, productId);
         }
 
         boolean found = false;

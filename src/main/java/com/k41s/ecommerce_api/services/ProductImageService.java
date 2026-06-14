@@ -23,12 +23,16 @@ public class ProductImageService {
     private final ProductRepository productRepository;
     private final ProductImageMapper mapper;
 
+    private static final String NOT_FOUND = " not found";
+    private static final String IMAGE_NOT_FOUND = "IMAGE_NOT_FOUND";
+    private static final String IMAGE_WITH_ID = "Image with ID ";
+
     @Transactional
     public ProductImage getImageEntityById(int id) {
         ProductImage image = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Image with ID " + id + " not found",
-                        "IMAGE_NOT_FOUND"
+                        IMAGE_WITH_ID + id + NOT_FOUND,
+                        IMAGE_NOT_FOUND
                 ));
         if (image.getMimeType() == null || image.getMimeType().trim().isEmpty()) {
             image.setMimeType("image/png");
@@ -45,7 +49,7 @@ public class ProductImageService {
         try {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Product with ID " + productId + " not found",
+                            "Product with ID " + productId + NOT_FOUND,
                             "PRODUCT_NOT_FOUND"
                     ));
             ProductImage productImage = getProductImage(file, product);
@@ -87,8 +91,8 @@ public class ProductImageService {
         return repository.findById(id)
                 .map(mapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Image with ID " + id + " not found",
-                        "IMAGE_NOT_FOUND"
+                        IMAGE_WITH_ID + id + NOT_FOUND,
+                        IMAGE_NOT_FOUND
                 ));
     }
 }

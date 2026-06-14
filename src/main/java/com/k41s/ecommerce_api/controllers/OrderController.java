@@ -21,7 +21,7 @@ public class OrderController {
     private final OrderService service;
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<List<OrderDTO>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 

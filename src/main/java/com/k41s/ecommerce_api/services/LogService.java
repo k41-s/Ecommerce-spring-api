@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class LogService {
     public void log(LogLevel level, String message) {
         Log log = new Log();
 
-        log.setTimestamp(LocalDateTime.now());
+        log.setTimestamp(LocalDateTime.now(Clock.systemDefaultZone()));
         log.setLevel(level);
         log.setMessage(message);
 

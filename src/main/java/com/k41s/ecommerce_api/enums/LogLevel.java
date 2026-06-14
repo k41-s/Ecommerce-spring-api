@@ -1,8 +1,13 @@
 package com.k41s.ecommerce_api.enums;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum LogLevel {
-    Information,
-    Warning,
+    @JsonProperty("Information")
+    INFORMATION,
+    @JsonProperty("Warning")
+    WARNING,
     ERROR,
-    Debug
+    @JsonProperty("Debug")
+    DEBUG
 }

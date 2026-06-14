@@ -3,6 +3,7 @@ package com.k41s.ecommerce_api.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.k41s.ecommerce_api.dtos.paypal.PayPalOrderResponse;
+import com.k41s.ecommerce_api.exceptions.PaymentGatewayException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -87,7 +88,7 @@ public class PayPalService {
             return response.getBody().get("access_token").asText();
         } catch (Exception e) {
             log.error("Failed to get PayPal access token", e);
-            throw new RuntimeException("Payment Gateway Error");
+            throw new PaymentGatewayException("Payment Gateway Error");
         }
     }
 
@@ -133,7 +134,7 @@ public class PayPalService {
 
         } catch (Exception e) {
             log.error("Failed to create PayPal order", e);
-            throw new RuntimeException("Could not initialize payment");
+            throw new PaymentGatewayException("Could not initialize payment");
         }
     }
 

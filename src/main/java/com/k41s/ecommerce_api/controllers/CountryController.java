@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/countries")
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class CountryController {
     private final CountryService service;
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<List<CountryDTO>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 

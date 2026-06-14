@@ -3,7 +3,6 @@ package com.k41s.ecommerce_api.mappers;
 import com.k41s.ecommerce_api.dtos.AuthenticatedUserDTO;
 import com.k41s.ecommerce_api.dtos.RegisterUserDTO;
 import com.k41s.ecommerce_api.dtos.UserDTO;
-import com.k41s.ecommerce_api.dtos.UserWithOrdersDTO;
 import com.k41s.ecommerce_api.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,7 +26,7 @@ public interface UserMapper {
     User fromAuthenticatedUserDto(AuthenticatedUserDTO dto);
 
     @Mapping(target = "passwordHash", ignore = true)
-    @Mapping(target = "role", constant = "User")
+    @Mapping(target = "role", constant = "USER")
     @Mapping(target = "id", ignore = true)
     User fromRegisterDto(RegisterUserDTO dto);
 

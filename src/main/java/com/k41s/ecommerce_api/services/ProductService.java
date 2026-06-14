@@ -29,9 +29,13 @@ public class ProductService {
     private final ProductMapper mapper;
     private final LogService logService;
 
+    private static final String NOT_FOUND = " not found";
+    private static final String PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND";
+    private static final String PRODUCT_WITH_ID = "Product with ID ";
+
     public Page<ProductDTO> getActiveProducts(String search, Integer categoryId, Pageable pageable) {
         String query = (search != null && !search.isBlank()) ? search : null;
-        logService.log(LogLevel.Information, "Searching products with query: " + query + ", categoryId: " +  categoryId);
+        logService.log(LogLevel.INFORMATION, "Searching products with query: " + query + ", categoryId: " +  categoryId);
 
         return repository.search(query, categoryId, pageable)
                 .map(mapper::toDto);
@@ -41,10 +45,10 @@ public class ProductService {
         ProductDTO dto = repository.findActiveById(id)
                 .map(mapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Product with ID " + id + " not found",
-                        "PRODUCT_NOT_FOUND"
+                        PRODUCT_WITH_ID + id + NOT_FOUND,
+                        PRODUCT_NOT_FOUND
                 ));
-        logService.log(LogLevel.Information, "Product with ID " + id + " found");
+        logService.log(LogLevel.INFORMATION, PRODUCT_WITH_ID + id + " found");
         return dto;
     }
 
@@ -53,14 +57,14 @@ public class ProductService {
     public void softDelete(Integer id) {
         Product entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Product with ID " + id + " not found",
-                        "PRODUCT_NOT_FOUND"
+                        PRODUCT_WITH_ID + id + NOT_FOUND,
+                        PRODUCT_NOT_FOUND
                 ));
 
         if(!entity.isDeleted()){
             entity.setDeleted(true);
             repository.save(entity);
-            logService.log(LogLevel.Information, "Product with ID " + id + " marked as deleted");
+            logService.log(LogLevel.INFORMATION, PRODUCT_WITH_ID + id + " marked as deleted");
         }
     }
 
@@ -78,7 +82,7 @@ public class ProductService {
         entity.setCountries(countries);
 
         Product savedEntity = repository.save(entity);
-        logService.log(LogLevel.Information, "Product with ID " + savedEntity.getId() + " created");
+        logService.log(LogLevel.INFORMATION, PRODUCT_WITH_ID + savedEntity.getId() + " created");
 
         return mapper.toDto(savedEntity);
     }
@@ -88,8 +92,8 @@ public class ProductService {
     public void update(int id, ProductDTO updatedDto) {
         Product existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Product with ID " + id + " not found",
-                        "PRODUCT_NOT_FOUND"
+                        PRODUCT_WITH_ID + id + NOT_FOUND,
+                        PRODUCT_NOT_FOUND
                 ));
         mapper.updateEntityFromDto(updatedDto, existing);
 
@@ -108,6 +112,6 @@ public class ProductService {
         }
 
         repository.save(existing);
-        logService.log(LogLevel.Information, "Product with ID " + id + " updated");
+        logService.log(LogLevel.INFORMATION, PRODUCT_WITH_ID + id + " updated");
     }
 }

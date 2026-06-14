@@ -23,7 +23,7 @@ public class AuthenticationSuccessListener implements ApplicationListener<Authen
         try {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             String logMessage = getLogMessage(event, attributes);
-            logService.log(LogLevel.Information, logMessage);
+            logService.log(LogLevel.INFORMATION, logMessage);
 
         } catch (Exception e) {
             logService.log(LogLevel.ERROR, "Failed to log authentication success: " + e.getMessage());
@@ -35,10 +35,10 @@ public class AuthenticationSuccessListener implements ApplicationListener<Authen
         String ipAddress = request.getRemoteAddr();
 
         Object principal = event.getAuthentication().getPrincipal();
-        String username = "Unknown";
+        String username;
 
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails) principal).getUsername();
+        if (principal instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
         } else {
             username = principal.toString();
         }

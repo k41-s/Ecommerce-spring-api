@@ -17,11 +17,13 @@ import com.k41s.ecommerce_api.repositories.ProductRepository;
 import com.k41s.ecommerce_api.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -46,7 +49,7 @@ public class OrderService {
         return repository.findAllWithItems()
                 .stream()
                 .map(mapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<OrderDTO> getUserOrders(Integer userId) {
@@ -54,7 +57,7 @@ public class OrderService {
         if (orders.isEmpty()) {
             throw new ResourceNotFoundException("No orders found for user id: " + userId, "ORDER_NOT_FOUND");
         }
-        return orders.stream().map(mapper::toDto).collect(Collectors.toList());
+        return orders.stream().map(mapper::toDto).toList();
     }
 
     @Transactional
@@ -64,7 +67,7 @@ public class OrderService {
 
         Order order = mapper.toEntity(dto);
         order.setUser(user);
-        order.setOrderedAt(LocalDateTime.now());
+        order.setOrderedAt(LocalDateTime.now(Clock.systemDefaultZone()));
 
         order.setStatus(OrderStatus.PENDING);
 
@@ -89,7 +92,7 @@ public class OrderService {
         }
         order.setItems(new HashSet<>(orderItems));
 
-        if (dto.getPaymentMethod() == PaymentMethod.Paypal) {
+        if (dto.getPaymentMethod() == PaymentMethod.PAYPAL) {
             PayPalOrderResponse payPalResponse = payPalService.createOrder(totalAmount, "EUR");
 
             order.setPaypalOrderId(payPalResponse.getPaypalOrderId());
@@ -115,7 +118,7 @@ public class OrderService {
                     userId + " in the specified date range.", "ORDER_NOT_FOUND");
         }
 
-        return orders.stream().map(mapper::toDto).collect(Collectors.toList());
+        return orders.stream().map(mapper::toDto).toList();
     }
 
     @Transactional
@@ -127,7 +130,7 @@ public class OrderService {
             order.setStatus(newStatus);
             repository.save(order);
         } else {
-            System.err.println("CRITICAL: Received webhook for unknown PayPal Order ID: " + paypalOrderId);
+            log.error("CRITICAL: Received webhook for unknown PayPal Order ID: {}", paypalOrderId);
         }
     }
 
