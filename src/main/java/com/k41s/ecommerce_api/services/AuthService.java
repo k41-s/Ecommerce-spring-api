@@ -4,6 +4,7 @@ import com.k41s.ecommerce_api.dtos.AuthenticatedUserDTO;
 import com.k41s.ecommerce_api.dtos.LoginDTO;
 import com.k41s.ecommerce_api.dtos.RegisterUserDTO;
 import com.k41s.ecommerce_api.entities.User;
+import com.k41s.ecommerce_api.entities.Cart;
 import com.k41s.ecommerce_api.enums.Role;
 import com.k41s.ecommerce_api.exceptions.JwtMalformedException;
 import com.k41s.ecommerce_api.exceptions.UserValidationException;
@@ -47,6 +48,11 @@ public class AuthService {
         String rawPassword = dto.getPassword();
         user.setPasswordHash(passwordEncoder.encode(rawPassword));
         user.setRole(Role.User);
+
+        Cart cart = new Cart();
+        cart.setUser(user);
+        user.setCart(cart);
+
         User savedUser = userRepository.save(user);
         CustomUserDetails userDetails = new CustomUserDetails(savedUser);
 
