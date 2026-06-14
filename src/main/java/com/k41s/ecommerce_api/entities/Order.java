@@ -1,5 +1,6 @@
 package com.k41s.ecommerce_api.entities;
 
+import com.k41s.ecommerce_api.enums.OrderStatus;
 import com.k41s.ecommerce_api.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,6 +21,13 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status = OrderStatus.PENDING;
+
+    @Column(name = "paypal_order_id")
+    private String paypalOrderId;
+
     private String notes;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -28,5 +36,4 @@ public class Order extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "UserId", nullable = false)
     private User user;
-
 }

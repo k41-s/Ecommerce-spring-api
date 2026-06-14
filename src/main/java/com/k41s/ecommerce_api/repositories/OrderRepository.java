@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
@@ -24,4 +25,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    Optional<Order> findByPaypalOrderId(String paypalOrderId);
 }

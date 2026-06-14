@@ -1,5 +1,6 @@
 package com.k41s.ecommerce_api.dtos;
 
+import com.k41s.ecommerce_api.enums.OrderStatus;
 import com.k41s.ecommerce_api.enums.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,4 +22,7 @@ public class OrderDTO {
     private PaymentMethod paymentMethod;
     private String notes;
     private List<OrderItemDTO> items;
+    private OrderStatus status;
+    private String paypalOrderId;
+    private String approvalUrl;
 }

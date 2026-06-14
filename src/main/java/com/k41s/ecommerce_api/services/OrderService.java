@@ -2,10 +2,13 @@ package com.k41s.ecommerce_api.services;
 
 import com.k41s.ecommerce_api.dtos.OrderDTO;
 import com.k41s.ecommerce_api.dtos.OrderItemDTO;
+import com.k41s.ecommerce_api.dtos.paypal.PayPalOrderResponse;
 import com.k41s.ecommerce_api.entities.Order;
 import com.k41s.ecommerce_api.entities.OrderItem;
 import com.k41s.ecommerce_api.entities.Product;
 import com.k41s.ecommerce_api.entities.User;
+import com.k41s.ecommerce_api.enums.OrderStatus;
+import com.k41s.ecommerce_api.enums.PaymentMethod;
 import com.k41s.ecommerce_api.exceptions.ProductOrderException;
 import com.k41s.ecommerce_api.exceptions.ResourceNotFoundException;
 import com.k41s.ecommerce_api.mappers.OrderMapper;
@@ -18,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,6 +38,8 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final OrderMapper mapper;
+
+    private final PayPalService payPalService;
 
     @PreAuthorize("hasRole('Admin')")
     public List<OrderDTO> getAll() {
@@ -60,6 +66,10 @@ public class OrderService {
         order.setUser(user);
         order.setOrderedAt(LocalDateTime.now());
 
+        order.setStatus(OrderStatus.PENDING);
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
         List<OrderItem> orderItems = new ArrayList<>();
         if (dto.getItems() != null) {
             for (OrderItemDTO itemDto : dto.getItems()) {
@@ -71,12 +81,30 @@ public class OrderService {
                 item.setOrder(order);
 
                 orderItems.add(item);
+
+                BigDecimal quantity = BigDecimal.valueOf(itemDto.getQuantity());
+                BigDecimal itemTotal = product.getPrice().multiply(quantity);
+                totalAmount = totalAmount.add(itemTotal);
             }
         }
         order.setItems(new HashSet<>(orderItems));
 
-        Order savedOrder = repository.save(order);
-        return mapper.toDto(savedOrder);
+        if (dto.getPaymentMethod() == PaymentMethod.Paypal) {
+            PayPalOrderResponse payPalResponse = payPalService.createOrder(totalAmount, "EUR");
+
+            order.setPaypalOrderId(payPalResponse.getPaypalOrderId());
+
+            Order savedOrder = repository.save(order);
+
+            OrderDTO responseDto = mapper.toDto(savedOrder);
+            responseDto.setApprovalUrl(payPalResponse.getApprovalUrl());
+
+            return responseDto;
+
+        } else {
+            Order savedOrder = repository.save(order);
+            return mapper.toDto(savedOrder);
+        }
     }
 
     public List<OrderDTO> getUserOrdersByDateRange(Integer userId, LocalDateTime start, LocalDateTime end) {
@@ -88,6 +116,19 @@ public class OrderService {
         }
 
         return orders.stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateOrderStatusByPaypalId(String paypalOrderId, OrderStatus newStatus) {
+        Optional<Order> orderOpt = repository.findByPaypalOrderId(paypalOrderId);
+
+        if (orderOpt.isPresent()) {
+            Order order = orderOpt.get();
+            order.setStatus(newStatus);
+            repository.save(order);
+        } else {
+            System.err.println("CRITICAL: Received webhook for unknown PayPal Order ID: " + paypalOrderId);
+        }
     }
 
     private Product checkProductValidity(Integer productId) {
