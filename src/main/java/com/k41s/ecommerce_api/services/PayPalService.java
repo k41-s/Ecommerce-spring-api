@@ -142,7 +142,7 @@ public class PayPalService {
         Map<String, Object> applicationContext = new HashMap<>();
         applicationContext.put("user_action", "PAY_NOW");
 
-        String myServerUrl = "https://conformal-eula-nonapostolically.ngrok-free.dev";
+        String myServerUrl = "https://ecommerce-spring-api-hnbl.onrender.com";
 
         applicationContext.put("return_url", myServerUrl + "/payment/success");
         applicationContext.put("cancel_url", myServerUrl + "/payment/cancel");
