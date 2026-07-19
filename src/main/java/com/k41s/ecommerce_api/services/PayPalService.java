@@ -33,6 +33,9 @@ public class PayPalService {
     @Value("${paypal.api.base}")
     private String baseUrl;
 
+    @Value("${app.server.url}")
+    private String myServerUrl;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper;
 
@@ -138,11 +141,9 @@ public class PayPalService {
         }
     }
 
-    private static @NonNull Map<String, Object> getApplicationContext() {
+    private @NonNull Map<String, Object> getApplicationContext() {
         Map<String, Object> applicationContext = new HashMap<>();
         applicationContext.put("user_action", "PAY_NOW");
-
-        String myServerUrl = "https://ecommerce-spring-api-hnbl.onrender.com";
 
         applicationContext.put("return_url", myServerUrl + "/payment/success");
         applicationContext.put("cancel_url", myServerUrl + "/payment/cancel");
