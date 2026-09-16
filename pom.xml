@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.k41s</groupId>
-	<artifactId>ecommerce-api</artifactId>
+	<artifactId>ScrollSpree-core</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ecommerce-api</name>
 	<description>Ecommerce API</description>

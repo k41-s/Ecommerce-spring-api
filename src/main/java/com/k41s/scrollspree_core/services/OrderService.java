@@ -1,0 +1,152 @@
+package com.k41s.scrollspree_core.services;
+
+import com.k41s.scrollspree_core.dtos.OrderDTO;
+import com.k41s.scrollspree_core.dtos.OrderItemDTO;
+import com.k41s.scrollspree_core.dtos.paypal.PayPalOrderResponse;
+import com.k41s.scrollspree_core.entities.Order;
+import com.k41s.scrollspree_core.entities.OrderItem;
+import com.k41s.scrollspree_core.entities.Product;
+import com.k41s.scrollspree_core.entities.User;
+import com.k41s.scrollspree_core.enums.OrderStatus;
+import com.k41s.scrollspree_core.enums.PaymentMethod;
+import com.k41s.scrollspree_core.exceptions.ProductOrderException;
+import com.k41s.scrollspree_core.exceptions.ResourceNotFoundException;
+import com.k41s.scrollspree_core.mappers.OrderMapper;
+import com.k41s.scrollspree_core.repositories.OrderRepository;
+import com.k41s.scrollspree_core.repositories.ProductRepository;
+import com.k41s.scrollspree_core.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class OrderService {
+
+    private final OrderRepository repository;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final OrderMapper mapper;
+
+    private final PayPalService payPalService;
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<OrderDTO> getAll() {
+        return repository.findAllWithItems()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    public List<OrderDTO> getUserOrders(Integer userId) {
+        List<Order> orders = repository.findByUserIdWithItems(userId);
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("No orders found for user id: " + userId, "ORDER_NOT_FOUND");
+        }
+        return orders.stream().map(mapper::toDto).toList();
+    }
+
+    @Transactional
+    public OrderDTO create(OrderDTO dto) {
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        Order order = mapper.toEntity(dto);
+        order.setUser(user);
+        order.setOrderedAt(LocalDateTime.now(Clock.systemDefaultZone()));
+
+        order.setStatus(OrderStatus.PENDING);
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        if (dto.getItems() != null) {
+            for (OrderItemDTO itemDto : dto.getItems()) {
+                Product product = checkProductValidity(itemDto.getProductId());
+
+                OrderItem item = new OrderItem();
+                item.setProduct(product);
+                item.setQuantity(itemDto.getQuantity());
+                item.setOrder(order);
+
+                orderItems.add(item);
+
+                BigDecimal quantity = BigDecimal.valueOf(itemDto.getQuantity());
+                BigDecimal itemTotal = product.getPrice().multiply(quantity);
+                totalAmount = totalAmount.add(itemTotal);
+            }
+        }
+        order.setItems(new HashSet<>(orderItems));
+
+        if (dto.getPaymentMethod() == PaymentMethod.PAYPAL) {
+            PayPalOrderResponse payPalResponse = payPalService.createOrder(totalAmount, "EUR");
+
+            order.setPaypalOrderId(payPalResponse.getPaypalOrderId());
+
+            Order savedOrder = repository.save(order);
+
+            OrderDTO responseDto = mapper.toDto(savedOrder);
+            responseDto.setApprovalUrl(payPalResponse.getApprovalUrl());
+
+            return responseDto;
+
+        } else {
+            Order savedOrder = repository.save(order);
+            return mapper.toDto(savedOrder);
+        }
+    }
+
+    public List<OrderDTO> getUserOrdersByDateRange(Integer userId, LocalDateTime start, LocalDateTime end) {
+        List<Order> orders = repository.findByUserIdAndOrderedAtBetweenWithItems(userId, start, end);
+
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("No orders found for user id: " +
+                    userId + " in the specified date range.", "ORDER_NOT_FOUND");
+        }
+
+        return orders.stream().map(mapper::toDto).toList();
+    }
+
+    @Transactional
+    public void updateOrderStatusByPaypalId(String paypalOrderId, OrderStatus newStatus) {
+        Optional<Order> orderOpt = repository.findByPaypalOrderId(paypalOrderId);
+
+        if (orderOpt.isPresent()) {
+            Order order = orderOpt.get();
+            order.setStatus(newStatus);
+            repository.save(order);
+        } else {
+            log.error("CRITICAL: Received webhook for unknown PayPal Order ID: {}", paypalOrderId);
+        }
+    }
+
+    private Product checkProductValidity(Integer productId) {
+        Optional<Product> productOpt = productRepository.findById(productId);
+        if (productOpt.isEmpty()) {
+            throw new ProductOrderException(
+                    "Product not found with ID: " + productId
+            );
+        }
+
+        Product product = productOpt.get();
+        if (product.isDeleted()) {
+            throw new ProductOrderException(
+                    "Product is deleted and cannot be ordered: " + productId
+            );
+        }
+        return product;
+    }
+}

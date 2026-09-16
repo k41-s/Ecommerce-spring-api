@@ -1,0 +1,40 @@
+package com.k41s.scrollspree_core.mappers;
+
+import com.k41s.scrollspree_core.dtos.OrderItemDTO;
+import com.k41s.scrollspree_core.entities.Order;
+import com.k41s.scrollspree_core.dtos.OrderDTO;
+import com.k41s.scrollspree_core.entities.OrderItem;
+import org.mapstruct.*;
+
+@Mapper(componentModel = "spring")
+public interface OrderMapper {
+
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "userName",
+            expression = "java(order.getUser() != null " +
+                    "? order.getUser().getName() + \" \" + order.getUser().getSurname() " +
+                    ": null)"
+    )
+    OrderDTO toDto(Order order);
+
+    @Mapping(target = "items", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    Order toEntity(OrderDTO dto);
+
+    @Mapping(target = "productId", source = "product.id")
+    @Mapping(target = "productName", source = "product.name")
+    @Mapping(target = "price", source = "product.price")
+    @Mapping(target = "isProductDeleted", source = "product.deleted")
+    @Mapping(target = "mainImgId",
+            expression = "java(orderItem.getProduct().getImages() != null " +
+                    "&& !orderItem.getProduct().getImages().isEmpty()" +
+                    "? orderItem.getProduct().getImages().get(0).getId()" +
+                    ": null)"
+    )
+    OrderItemDTO toItemDto(OrderItem orderItem);
+
+    @Mapping(target = "id", ignore = true)
+    void updateEntityFromDto(OrderDTO dto, @MappingTarget Order entity);
+
+}

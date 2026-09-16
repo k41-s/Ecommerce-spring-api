@@ -1,0 +1,62 @@
+package com.k41s.scrollspree_core.services;
+
+import com.k41s.scrollspree_core.dtos.CategoryDTO;
+import com.k41s.scrollspree_core.entities.Category;
+import com.k41s.scrollspree_core.exceptions.ResourceNotFoundException;
+import com.k41s.scrollspree_core.mappers.CategoryMapper;
+import com.k41s.scrollspree_core.repositories.CategoryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CategoryService {
+    private final CategoryRepository repository;
+    private final CategoryMapper mapper;
+
+    public List<CategoryDTO> getAll() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    public CategoryDTO getById(int id) {
+        return repository.findById(id)
+                .map(mapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Category with ID " + id + " not found",
+                        "CATEGORY_NOT_FOUND"
+                ));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public CategoryDTO create(CategoryDTO dto) {
+        return mapper.toDto(
+                repository.save(mapper.toEntity(dto))
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void update(int id, CategoryDTO updated) {
+        Category existing = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Category with ID " + id + " not found",
+                        "CATEGORY_NOT_FOUND"
+                ));
+        mapper.updateEntityFromDto(updated, existing);
+        repository.save(existing);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public boolean delete(int id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+}
