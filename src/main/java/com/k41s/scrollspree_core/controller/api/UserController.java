@@ -1,4 +1,4 @@
-package com.k41s.scrollspree_core.controllers;
+package com.k41s.scrollspree_core.controller.api;
 
 import com.k41s.scrollspree_core.dtos.ChangePasswordDTO;
 import com.k41s.scrollspree_core.dtos.UserDTO;
